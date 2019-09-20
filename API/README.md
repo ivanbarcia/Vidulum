@@ -1,3 +1,3 @@
-# sgm-api
+# vidulum-api
 
-Web API para Trade10, Portal Web y App
+Web API con SwaggerUI
