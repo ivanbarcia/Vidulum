@@ -1,0 +1,12 @@
+CREATE PROCEDURE dbo.GetEspecies
+AS BEGIN
+
+	select 
+		espe_codigo as 'Codigo',
+		espe_descrip as 'Descripcion'
+	from 
+		especies 
+
+END
+
+

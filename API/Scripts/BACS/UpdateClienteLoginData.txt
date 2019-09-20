@@ -1,0 +1,12 @@
+create procedure UpdateClienteLoginData
+(
+	@id int,
+	@email varchar(max)
+)
+as begin
+
+	select 1
+
+end
+
+

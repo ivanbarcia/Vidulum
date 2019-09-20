@@ -1,0 +1,43 @@
+CREATE PROCEDURE dbo.GetFondo
+(
+	@espe_codigo varchar
+)
+AS BEGIN
+
+	--select 
+	--	espe_codigo,
+	--	espe_descrip,
+	--	espe_codcot
+	--from 
+	--	especies 
+	--where 
+	--	tesp_codigo = 'F'
+	--and espe_codigo = @espe_codigo
+
+	if (@espe_codigo = '')
+		select '' as Codigo,'' as Descripcion, '' as Moneda, 0.00 as ValorCuotaParte, 0.00 as TotalMonto, 0.00 as TotalCP
+
+	declare @valorCP decimal(18,2)
+	declare @totalMonto decimal(18,2)
+	declare @totalCP decimal(18,2)
+
+	if (@espe_codigo = '1')
+	BEGIN
+		set @valorCP = 1143.21
+		set @totalMonto = (select sum(oper_monto) from operaciones where espe_codigo = '2018FG')
+		set @totalCP = cast((@totalMonto / @valorCP) as decimal(18,2))
+
+		select '2018FG' as Codigo,'CB BASA Ahorro Guaranies' as Descripcion, '69' as Moneda, @valorCP as ValorCuotaParte, @totalMonto as TotalMonto, @totalCP as TotalCP
+	END
+
+	if (@espe_codigo = '2')
+	BEGIN
+		set @valorCP = 117.38
+		set @totalMonto = (select sum(oper_monto) from operaciones where espe_codigo = '2018FU')
+		set @totalCP = cast((@totalMonto / @valorCP) as decimal(18,2))
+
+		select '2018FU' as Codigo,'CB BASA Ahorro Dolares' as Descripcion, '02' as Moneda, 117.38 as ValorCuotaParte, @totalMonto as TotalMonto, @totalCP as TotalCP
+	END
+
+END
+

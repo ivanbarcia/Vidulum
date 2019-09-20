@@ -1,0 +1,31 @@
+﻿if object_id('dbo.ExtractoClienteFoto') is null 
+CREATE TABLE [dbo].[ExtractoClienteFoto](
+	[ccm_id] [int] NULL,
+	[ccm_fvalor] [datetime] NULL,
+	[espe_codigo] [varchar](6) NULL,
+	[concc_id] [int] NULL,
+	[concc_descrip] [varchar](300) NULL,
+	[ccm_tipomov] [char](1) NULL,
+	[ccm_monto] [money] NULL,
+	[ccm_falta] [datetime] NULL,
+	[saldo_parcial] [money] NULL,
+	[precio_val] [decimal](38, 25) NULL,
+	[ccus_id] [int] NULL,
+	[ccus_numero] [int] NULL,
+	[fecha_precios] [datetime] NULL,
+	[oper_numero] [int] NULL,
+	[titular] [varchar](300) NULL,
+	[ccus_numero_tit] [varchar](500) NULL,
+	[concc_esbloqueo] [int] NULL,
+	[espe_descrip] [varchar](1000) NULL,
+	[codigo_cv] [varchar](50) NULL,
+	[codigo_ISIN] [varchar](50) NULL,
+	[codigo_bolsa] [varchar](50) NULL,
+	[PPCpa] [decimal](38, 25) NULL,
+	[PPVta] [decimal](38, 25) NULL,
+	[Rendimiento] [decimal](38, 25) NULL,
+	[oper_monto] [money] NULL,
+	[FDesde] [datetime] NULL,
+	[FHasta] [datetime] NULL
+) ON [PRIMARY]
+GO

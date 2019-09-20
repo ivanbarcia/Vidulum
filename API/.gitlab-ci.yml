@@ -1,0 +1,52 @@
+image: microsoft/dotnet:latest
+
+variables:
+  NUGET_PATH: 'C:\Tools\Nuget\nuget.exe'
+  MSBUILD_PATH: 'C:\Tools\MSBuild\MSBuild.exe'
+  XUNIT_PATH: packages\xunit.runner.console.2.3.1\tools\net452
+  UNITTEST_FOLDER: '.\tests\Vidulum.IntegrationTest\bin\Release\'
+
+stages:
+  - build
+  - test
+  - deploy
+
+build_job:
+  tags: 
+  - build
+  stage: build
+  only:
+    - develop
+  script:
+    - '& "$env:NUGET_PATH" restore'
+    - '& "$env:MSBUILD_PATH" /p:Configuration=Release /clp:ErrorsOnly'
+    - '& "$env:MSBUILD_PATH" Vidulum\Vidulum.csproj /p:DeployOnBuild=true /p:Configuration=Release /P:PublishProfile=FolderProfile.pubxml'
+  artifacts:
+    expire_in: 2 days
+    paths:
+      - '.\Vidulum\bin\Release\Publish\'
+      - '$env:UNITTEST_FOLDER'
+      - '.\$env:XUNIT_PATH\*.*'
+
+test_job:
+  tags: 
+  - test
+  stage: test
+  only:
+    - develop
+  script:
+    - '& "$env:XUNIT_PATH\xunit.console.exe" "$env:UNITTEST_FOLDER\Vidulum.IntegrationTest.dll"'
+  dependencies:
+    - build_job
+
+deploy_job:
+  tags: 
+  - deploy
+  stage: deploy
+  only:
+    - develop
+  script:
+    - 'xcopy /y /s ".\Vidulum\bin\Release\Publish\*.*" "C:\inetpub\wwwroot\ci-cd-example"'
+  dependencies:
+    - build_job
+    - test_job

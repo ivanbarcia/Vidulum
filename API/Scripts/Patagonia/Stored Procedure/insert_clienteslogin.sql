@@ -1,0 +1,1 @@
+insert into ClientesLogin select '30672875613', 'e10adc3949ba59abbe56e057f20f883e', '3729', 'BANCO PATAGONIA S.A.', 1, getdate(), 'SGM', null, null, null, null, 0, 0, 0, null, null, null, null
