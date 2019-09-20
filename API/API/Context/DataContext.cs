@@ -17,7 +17,13 @@ namespace API.Context
         }
 
         public DbSet<ErrorDetails> ErrorDetails { get; set; }
-        
+
+        public DbSet<Moneda> Moneda { get; set; }
+        public DbSet<Sindicato> Sindicato { get; set; }
+        public DbSet<Trabajo> Trabajo { get; set; }
+        public DbSet<Usuario> Usuario { get; set; }
+        public DbSet<Sueldo> Sueldo { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)

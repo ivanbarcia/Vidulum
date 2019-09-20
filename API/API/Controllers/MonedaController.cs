@@ -12,36 +12,37 @@ namespace API.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiExplorerSettings(GroupName = "v1")]
-    public class DolarController : Controller
+    public class MonedaController : Controller
     {
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
 
-        public DolarController(DataContext context, IConfiguration configuration)
+        public MonedaController(DataContext context, IConfiguration configuration)
         {
             _context = context;
             _configuration = configuration;
         }
 
         /// <summary>
-        /// Obtengo la cotizacion del dolar
+        /// Obtengo cotizacion
         /// </summary>
         /// <remarks>
         /// Sample request:
         ///
-        ///     POST /GetCotizacionDolar
+        ///     POST /GetCotizacion
         ///     {
+        ///        "Moneda": "USD",
         ///        "Fecha": "20190830"
         ///     }
         /// </remarks>
         /// <returns>Obtengo cotizacion del dolar a la fecha</returns>
         [HttpGet]
-        [Route("GetCotizacionDolar")]
+        [Route("GetCotizacion")]
         [ETagFilter(200)]
-        [ProducesResponseType(typeof(IEnumerable<string>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(IEnumerable<Moneda>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorDetails), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        public async Task<IActionResult> GetCotizacionDolar([FromQuery]string Fecha)
+        public async Task<IActionResult> GetCotizacion([FromQuery]string Moneda, [FromQuery]string Fecha)
         {
             //var post = await _context.PaqueteCuentas.FromSql("EXEC paquetes_custodias_R {0}", cliente).AsNoTracking().ToListAsync();
 
