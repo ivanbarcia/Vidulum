@@ -18,6 +18,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using API.Interfaces;
 
 namespace API.Controllers
 {
@@ -25,12 +26,12 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class AutenticacionController : Controller
     {
-        private readonly DataContext _context;
         private IConfiguration _configuration;
+        private readonly IUsuarioRepository _dataRepository;
 
-        public AutenticacionController(DataContext context, IConfiguration configuration)
+        public AutenticacionController(IUsuarioRepository dataRepository, IConfiguration configuration)
         {
-            _context = context;
+            _dataRepository = dataRepository;
             _configuration = configuration;
         }
 
@@ -61,16 +62,16 @@ namespace API.Controllers
                 Password = new Services.Encriptacion().Md5Encryption(Password);
             }
 
-            var post = "";//await _context.ClienteLogin.FromSql("EXEC ClienteLogin {0},{1}", UserName, Password).ToListAsync();
+            var post = _dataRepository.FindBy(x => x.Email == UserName && x.Password == Password);
 
-            //if (string.IsNullOrEmpty(post.FirstOrDefault().clie_alias))
-            //{
-            //    return StatusCode((int)HttpStatusCode.Unauthorized, post);
-            //}
+            if (string.IsNullOrEmpty(post.FirstOrDefault().Email))
+            {
+                return StatusCode((int)HttpStatusCode.Unauthorized, post);
+            }
 
             var tokenString = GenerateJSONWebToken(UserName);
 
-            var result = new { Login = post[0], Authentication = tokenString };
+            var result = new { Login = post, Authentication = tokenString };
 
             return new ObjectResult(result);
         }
@@ -95,7 +96,7 @@ namespace API.Controllers
 
             var refreshToken = GenerateRefreshToken();
 
-            _context.Database.ExecuteSqlCommand(string.Format("update dbo.ClientesLogin set refreshToken = '{1}' where Usuario = '{0}'", userInfo, refreshToken));
+            //_dataRepository.Database.ExecuteSqlCommand(string.Format("update dbo.ClientesLogin set refreshToken = '{1}' where Usuario = '{0}'", userInfo, refreshToken));
 
             return new
             {
@@ -144,7 +145,7 @@ namespace API.Controllers
 
             var resultParameter = new SqlParameter("@result", SqlDbType.VarChar, 200);
             resultParameter.Direction = ParameterDirection.Output;
-            _context.Database.ExecuteSqlCommand("set @result = (select refreshToken FROM dbo.ClientesLogin where Usuario = {0});", username, resultParameter); //retrieve the refresh token from a data store
+            //_context.Database.ExecuteSqlCommand("set @result = (select refreshToken FROM dbo.ClientesLogin where Usuario = {0});", username, resultParameter); //retrieve the refresh token from a data store
             var savedRefreshToken = resultParameter.Value.ToString();
 
             if (savedRefreshToken != parameters.refreshToken)
@@ -179,6 +180,106 @@ namespace API.Controllers
                 throw new SecurityTokenException("Invalid token");
 
             return principal;
+        }
+
+        /// <summary>
+        /// Obtengo los requisitos para el cambio de contraseña
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     GET /ChangePassword
+        ///     {
+        ///     }
+        /// </remarks>
+        /// <returns>Parametros cambio contraseña</returns>
+        [HttpGet]
+        [Route("ChangePassword")]
+        [ETagFilter(200)]
+        [ProducesResponseType(typeof(IEnumerable<string>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public async Task<IActionResult> ChangePassword(Usuario datos)
+        {
+            _dataRepository.Update(datos);
+
+            return new ObjectResult(datos);
+        }
+
+        /// <summary>
+        /// Realizo el cambio de contraseña
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     Get /UpdatePassword
+        ///     {
+        ///        "Cliente": "80009515-4",
+        ///        "NuevaPassword": "Agosto$2019",
+        ///        "RepeticionPassword": "Agosto$2019"
+        ///     }
+        /// </remarks>
+        /// <returns>La respuesta contiene un valor numerico (0 en caso de exito) y ademas un mensaje en caso de error</returns>
+        [HttpGet]
+        [Route("UpdatePassword")]
+        [ETagFilter(200)]
+        [ProducesResponseType(typeof(IEnumerable<string>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public async Task<IActionResult> UpdatePassword(Usuario datos)
+        {
+            _dataRepository.Update(datos);
+
+            return new ObjectResult(datos);
+        }
+
+        private string Md5Encryption(string dataToEncrypt)
+        {
+            MD5 md5Hash = MD5.Create();
+            byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(dataToEncrypt));
+            StringBuilder sBuilder = new StringBuilder();
+
+            for (int i = 0; i < data.Length; i++)
+            {
+                sBuilder.Append(data[i].ToString("x2"));
+            }
+
+            return sBuilder.ToString();
+        }
+
+        private bool ValidatePassword(string password)
+        {
+            int minLength = 0; //_context.ValorParametro.FromSql("EXEC ReadParamValue {0}", "TAMMIN").FirstOrDefault().Value;
+            int maxLength = 0; //_context.ValorParametro.FromSql("EXEC ReadParamValue {0}", "TAMMAX").FirstOrDefault().Value;
+
+            bool meetsLengthRequirements = (password.Length >= minLength) & (password.Length <= maxLength);
+            int numberCounter = 0;
+            int upperCaseCounter = 0;
+            int symbolCounter = 0;
+
+            if (meetsLengthRequirements)
+            {
+                foreach (char c in password)
+                {
+                    if (char.IsUpper(c))
+                    {
+                        upperCaseCounter++;
+                    }
+                    else if (char.IsSymbol(c) || char.IsPunctuation(c)) symbolCounter++;
+                    else if (char.IsDigit(c))
+                    {
+                        numberCounter++;
+                    }
+                }
+            }
+
+            bool isValid = meetsLengthRequirements
+                        && upperCaseCounter >= 0 //_context.ValorParametro.FromSql("EXEC ReadParamValue {0}", "MINMAY").FirstOrDefault().Value
+                        && symbolCounter >= 0 //_context.ValorParametro.FromSql("EXEC ReadParamValue {0}", "MINCAR").FirstOrDefault().Value
+                        && numberCounter >= 0 //_context.ValorParametro.FromSql("EXEC ReadParamValue {0}", "MINNUM").FirstOrDefault().Value
+                        ;
+
+            return isValid;
         }
     }
 }

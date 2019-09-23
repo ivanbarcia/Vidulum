@@ -22,16 +22,6 @@ namespace API.Infrastructure
                     License = new License(){ Name = "", Url = "" }
                 });
 
-                c.SwaggerDoc("v2", new Info
-                {
-                    Version = "v2",
-                    Title = "API SGMTrade",
-                    Description = "Web API de SurecompSGM",
-                    TermsOfService = "None",
-                    Contact = new Contact() { Name = "Ivan Barcia", Email = "ivan.barcia@surecomp.com", Url = "" },
-                    License = new License() { Name = "", Url = "" }
-                });
-
                 c.AddSecurityDefinition("Bearer", new ApiKeyScheme
                 {
                     Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
@@ -70,7 +60,6 @@ namespace API.Infrastructure
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "API Trade10");
-                c.SwaggerEndpoint("/swagger/v2/swagger.json", "API SGMTrade");
 
                 c.RoutePrefix = string.Empty;
                 c.InjectStylesheet("/swagger/ui/theme-feeling-blue.css");

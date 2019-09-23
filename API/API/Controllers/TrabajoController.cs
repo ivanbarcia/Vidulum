@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using API.Models;
+using API.Interfaces;
 
 namespace API.Controllers
 {
@@ -14,12 +15,12 @@ namespace API.Controllers
     [ApiExplorerSettings(GroupName = "v1")]
     public class TrabajoController : Controller
     {
-        private readonly DataContext _context;
         private readonly IConfiguration _configuration;
+        private readonly ITrabajoRepository _dataRepository;
 
-        public TrabajoController(DataContext context, IConfiguration configuration)
+        public TrabajoController(ITrabajoRepository dataRepository, IConfiguration configuration)
         {
-            _context = context;
+            _dataRepository = dataRepository;
             _configuration = configuration;
         }
 
@@ -46,8 +47,7 @@ namespace API.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         public async Task<IActionResult> SetSueldo(Trabajo datosTrabajo)
         {
-            _context.Trabajo.Add(datosTrabajo);
-            _context.SaveChanges();
+            _dataRepository.Insert(datosTrabajo);
 
             return new ObjectResult(datosTrabajo);
         }
@@ -74,10 +74,10 @@ namespace API.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         public async Task<IActionResult> AddSueldo(Sueldo datosSueldo)
         {
-            _context.Sueldo.Add(datosSueldo);
-            _context.SaveChanges();
+            //_dataRepository.Insert(datosSueldo);
 
-            return new ObjectResult(datosSueldo);
+            //return new ObjectResult(datosSueldo);
+            return new ObjectResult("");
         }
 
         /// <summary>

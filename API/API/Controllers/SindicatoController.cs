@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using API.Models;
+using API.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers
 {
@@ -14,12 +16,12 @@ namespace API.Controllers
     [ApiExplorerSettings(GroupName = "v1")]
     public class SindicatoController : Controller
     {
-        private readonly DataContext _context;
         private readonly IConfiguration _configuration;
+        private readonly ISindicatoRepository _dataRepository;
 
-        public SindicatoController(DataContext context, IConfiguration configuration)
+        public SindicatoController(ISindicatoRepository dataRepository, IConfiguration configuration)
         {
-            _context = context;
+            _dataRepository = dataRepository;
             _configuration = configuration;
         }
 
@@ -35,6 +37,7 @@ namespace API.Controllers
         ///     }
         /// </remarks>
         /// <returns>Obtengo cotizacion del dolar a la fecha</returns>
+        [AllowAnonymous]
         [HttpGet]
         [Route("GetSindicatos")]
         [ETagFilter(200)]
@@ -43,9 +46,9 @@ namespace API.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         public async Task<IActionResult> GetSindicatos()
         {
-            //var post = await _context.PaqueteCuentas.FromSql("EXEC paquetes_custodias_R {0}", cliente).AsNoTracking().ToListAsync();
+            var data = _dataRepository.GetAll();
 
-            return new ObjectResult(""/*post*/);
+            return new ObjectResult(data);
         }
     }
 }

@@ -13,19 +13,6 @@ namespace SGMApi.IntegrationTest
     [TestFixture]
     public class UsuarioApiTest : TestFixture
     {
-        [Test]
-        public async Task AddAlumno()
-        {
-            // Act
-            var content = new StringContent("", Encoding.UTF8,"application/x-www-form-urlencoded");
-            var response = await _client.PostAsync("api/Usuario/AddAlumno?Nombre=Ivan&Apellido=Barcia", content);
-
-            // Arrange
-            response.EnsureSuccessStatusCode();
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-
-            var result = await response.Content.ReadAsStringAsync();
-            var json = JsonConvert.DeserializeObject<Usuario>(result);
-        }
+        
     }
 }

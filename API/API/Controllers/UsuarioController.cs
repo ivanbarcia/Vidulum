@@ -6,6 +6,7 @@ using API.Models;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using API.Interfaces;
 
 namespace API.Controllers
 {
@@ -14,13 +15,37 @@ namespace API.Controllers
     [ApiExplorerSettings(GroupName = "v1")]
     public class UsuarioController : Controller
     {
-        private readonly DataContext _context;
         private readonly IConfiguration _configuration;
+        private readonly IUsuarioRepository _dataRepository;
 
-        public UsuarioController(DataContext context, IConfiguration configuration)
+        public UsuarioController(IUsuarioRepository dataRepository, IConfiguration configuration)
         {
-            _context = context;
+            _dataRepository = dataRepository;
             _configuration = configuration;
+        }
+
+        /// <summary>
+        /// Alta de Usuario
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     POST /AddUsuario
+        ///     {
+        ///     }
+        /// </remarks>
+        /// <returns>Usuario se da de alta al sistema</returns>
+        [HttpGet]
+        [Route("AddUsuario")]
+        [ETagFilter(200)]
+        [ProducesResponseType(typeof(IEnumerable<string>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public async Task<IActionResult> AddUsuario(Usuario data)
+        {
+            _dataRepository.Insert(data);
+            
+            return new ObjectResult(data);
         }
 
         /// <summary>
@@ -44,9 +69,9 @@ namespace API.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         public async Task<IActionResult> GetPosicionTotal([FromQuery]string DNI, [FromQuery]string Fecha)
         {
-            //var post = await _context.PaqueteCuentas.FromSql("EXEC paquetes_custodias_R {0}", cliente).AsNoTracking().ToListAsync();
+            var data = _dataRepository.GetAll();
 
-            return new ObjectResult(""/*post*/);
+            return new ObjectResult(data);
         }
     }
 }

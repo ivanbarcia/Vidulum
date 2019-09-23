@@ -26,6 +26,8 @@ using API.Context;
 using API.Infrastructure;
 using API.Models;
 using static API.Services.Encriptacion;
+using API.Interfaces;
+using API.Repositories;
 
 namespace API
 {
@@ -105,6 +107,12 @@ namespace API
                 });
 
             services.AddSingleton(Configuration);
+
+            // INSTANCIO REPOSITORIOS
+            services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+            services.AddScoped<IMonedaRepository, MonedaRepository>();
+            services.AddScoped<ISindicatoRepository, SindicatoRepository>();
+            services.AddScoped<ITrabajoRepository, TrabajoRepository>();
 
             services.AddMvc(config =>
             {

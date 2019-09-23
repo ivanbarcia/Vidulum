@@ -6,6 +6,7 @@ using API.Models;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using API.Interfaces;
 
 namespace API.Controllers
 {
@@ -14,12 +15,12 @@ namespace API.Controllers
     [ApiExplorerSettings(GroupName = "v1")]
     public class MonedaController : Controller
     {
-        private readonly DataContext _context;
         private readonly IConfiguration _configuration;
+        private readonly IMonedaRepository _dataRepository;
 
-        public MonedaController(DataContext context, IConfiguration configuration)
+        public MonedaController(IMonedaRepository dataRepository, IConfiguration configuration)
         {
-            _context = context;
+            _dataRepository = dataRepository;
             _configuration = configuration;
         }
 
@@ -44,9 +45,9 @@ namespace API.Controllers
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         public async Task<IActionResult> GetCotizacion([FromQuery]string Moneda, [FromQuery]string Fecha)
         {
-            //var post = await _context.PaqueteCuentas.FromSql("EXEC paquetes_custodias_R {0}", cliente).AsNoTracking().ToListAsync();
+            var data = _dataRepository.GetAll();
 
-            return new ObjectResult(""/*post*/);
+            return new ObjectResult(data);
         }
     }
 }

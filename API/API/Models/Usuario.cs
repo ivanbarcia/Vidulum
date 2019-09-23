@@ -1,20 +1,24 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace API.Models
 {
+    [Table("Usuarios")]
     public class Usuario
     {
         [Key]
-        public int NroDocumento { get; set; }
-        public string Nombre { get; set; }
-        public string Apellido { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
-        public int TrabajoId { get; set; }
 
-        public string UserName { get; set; }
+        [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        public virtual Trabajo Trabajo { get; set; }
+        //public int NroDocumento { get; set; }
+        //public string Nombre { get; set; }
+        //public string Apellido { get; set; }
+
+        public Trabajo Trabajo { get; set; }
     }
 }
 

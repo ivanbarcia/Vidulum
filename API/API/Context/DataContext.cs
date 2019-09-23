@@ -16,13 +16,13 @@ namespace API.Context
         {
         }
 
+        public DbSet<Cotizacion> Cotizacion { get; set; }
         public DbSet<ErrorDetails> ErrorDetails { get; set; }
-
         public DbSet<Moneda> Moneda { get; set; }
         public DbSet<Sindicato> Sindicato { get; set; }
+        public DbSet<Sueldo> Sueldo { get; set; }
         public DbSet<Trabajo> Trabajo { get; set; }
         public DbSet<Usuario> Usuario { get; set; }
-        public DbSet<Sueldo> Sueldo { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -33,6 +33,24 @@ namespace API.Context
 
                 optionsBuilder.UseSqlServer(configuration.GetConnectionString("DATABASE"));
             }
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            //modelBuilder.Entity<Moneda>()
+            //    .HasData(new Moneda
+            //    {
+            //        Id = 1,
+            //        Codigo = "USD",
+            //        Descripcion = "Dolares"
+            //    }, new Moneda
+            //    {
+            //        Id = 2,
+            //        Codigo = "ARS",
+            //        Descripcion = "Pesos Argentinos"
+            //    });
         }
     }
 }
